@@ -1,3 +1,4 @@
+import Common
 import UnoI (unoInteractive)
 
 main :: IO()
