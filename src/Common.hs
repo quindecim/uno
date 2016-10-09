@@ -18,18 +18,25 @@ instance Enum Card where
 data Value = Zero | One | Two | Three | Four | Five | Six | Seven | Eight | Nine | Plus2 | Stop | ChDir | Plus4 | ChCol | Dummy
            deriving (Read, Show, Eq, Ord, Enum)
 
-data Player = HPlayer { name :: String,
-                        hand :: [ Card ] }
-            | AiPlayer { name :: String,
-                         hand :: [ Card ] }
-            deriving (Show, Eq)
+type Hand = [ Card ]
+type Deck = [ Card ]
+type D_Stack = [ Card ]
 
---- state = (players, deck, d_stack)
+data Player = HPlayer { name :: String,
+                        hand :: Hand }
+            | AiPlayer { name :: String,
+                         hand :: Hand }
+            deriving (Show, Eq)
 
 data State = State { players :: [ Player ],
                      deck :: Deck,
                      d_stack :: D_Stack }
 
-type Deck = [ Card ]
-type D_Stack = [ Card ]
-type Hand = [ Card ]
+fullDeck :: Deck
+fullDeck = zeroes ++ (nplicate 2 ncards) ++ (nplicate 4 blacks) where
+  zeroes = [ Card c Zero | c <- [Red .. Blue] ]
+  ncards = [ Card c v | c <- [Red .. Blue], v <- [One .. ChDir] ]
+  blacks = [ Card Black v | v <- [Plus4, ChCol] ]
+
+nplicate :: Int -> [a] -> [a]
+nplicate n xs = concat $ (take n) $ repeat xs

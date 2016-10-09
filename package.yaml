@@ -9,6 +9,7 @@ library:
   exposed-modules:
     - UnoI
     - Common
+    - Shuffler
   source-dirs: src
   dependencies:
 
@@ -23,12 +24,6 @@ executables:
 tests:
   test:
     main: Tests.hs
-    source-dirs: test
-    dependencies:
-      - uno
-      - hspec
-  common:
-    main: CommonTests.hs
     source-dirs: test
     dependencies:
       - uno

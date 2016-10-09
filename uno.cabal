@@ -16,6 +16,7 @@ library
   exposed-modules:
       UnoI
       Common
+      Shuffler
   other-modules:
       Main
       Paths_uno
@@ -32,21 +33,8 @@ executable uno
     , hpack
   other-modules:
       Common
+      Shuffler
       UnoI
-  default-language: Haskell2010
-
-test-suite common
-  type: exitcode-stdio-1.0
-  main-is: CommonTests.hs
-  hs-source-dirs:
-      test
-  build-depends:
-      base
-    , ansi-terminal
-    , uno
-    , hspec
-  other-modules:
-      Tests
   default-language: Haskell2010
 
 test-suite test
@@ -59,6 +47,4 @@ test-suite test
     , ansi-terminal
     , uno
     , hspec
-  other-modules:
-      CommonTests
   default-language: Haskell2010
