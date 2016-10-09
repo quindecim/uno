@@ -1,0 +1,28 @@
+name: uno
+version: 0.1.1
+
+dependencies:
+  - base
+
+library:
+  exposed-modules: UnoI
+  source-dirs: src
+  dependencies:
+  # - foo       # List here the packages you
+  # - bar       # want to use in your solution.
+
+executables:
+  uno:
+    main: Main.hs
+    source-dirs: src
+    dependencies:
+      - uno
+      - hpack
+
+tests:
+  test:
+    main: Tests.hs
+    source-dirs: test
+    dependencies:
+      - uno
+      - hspec
