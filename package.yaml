@@ -1,3 +1,7 @@
+# If you are making changes to this file, make sure to run `hpack` to
+# update the corresponding cabal file.
+#
+
 name: uno
 version: 0.1.1
 
@@ -10,6 +14,7 @@ library:
     - UnoI
     - Common
     - Shuffler
+    - Game
   source-dirs: src
   dependencies:
 

@@ -20,6 +20,25 @@ To work on this project, make sure you have the following:
 I've started developing this on an OS X machine, so there might be
 extra steps to make this work in a Linux or a Windows machine.
 
+## Setup
+
+On Mac OS X
+
+First, install Haskell, cabal, and stack.
+
+```
+brew cask install haskell-platform
+cabal install hake
+cabal install hpack
+```
+
+Second, go to cloned repo, and let stack do it's thing.
+
+```
+cd uno
+hake
+```
+
 ## Copyright and License
 
 All important references, copyright ownership belongs to those who

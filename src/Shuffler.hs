@@ -2,7 +2,7 @@ module Shuffler where
 
 import Common
 
-shuffle :: Deck -> Deck
+shuffleDeck :: State -> IO State
 
 -- TODO: Implement a random shuffling algorithm
-shuffle d = [ ]
+shuffleDeck state = return (state)
