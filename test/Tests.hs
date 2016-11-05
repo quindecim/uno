@@ -73,7 +73,7 @@ gameSpecs = describe "Game" $ do
       --pendingWith "Implement the setupGame function"
        let gs = initGame 4
        gs' <- setupGame gs
-       length (deck gs') `shouldBe` 88
+       length (deck gs') `shouldBe` 80
 
 -- Test data fixtures
 --
