@@ -1,6 +1,7 @@
 module Game where
 
 import Common
+import Shuffler
 
 -- TODO: Implement a method to initialize a new game given n players
 
@@ -12,8 +13,8 @@ playerNames = ["1-Katrina", "2-Aljomai", "3-Jackson", "4-Minho"]
 initPlayers :: Int -> Int -> [Player]
 initPlayers size 4 = []
 initPlayers size cnt
-    | size /= 0 && size > cnt  = HPlayer (playerNames !! cnt) (take 1 fullDeck) : initPlayers size (cnt + 1)
-    | cnt < 4                  = AiPlayer (playerNames !! cnt) (take 1 fullDeck) : initPlayers size (cnt + 1)
+    | size /= 0 && size > cnt  = HPlayer (playerNames !! cnt) [] : initPlayers size (cnt + 1)
+    | cnt < 4                  = AiPlayer (playerNames !! cnt) [] : initPlayers size (cnt + 1)
  
 
 initGame :: Int -> State
@@ -34,4 +35,4 @@ initGame n = State { players = initPlayers n 0,
 
 -- TODO: Implement a method to setup the game
 setupGame :: State -> IO State
-setupGame gs = return (gs)
+setupGame gs = shuffleDeck gs
