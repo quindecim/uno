@@ -7,7 +7,7 @@ import System.Random.Shuffle
 -- TODO: Implement a random shuffling algorithm
 shuffleDeck :: State -> IO State
 shuffleDeck state@State{players = _players, 
-                        deck = _deck} = return state { players = setHnds shufdeck 7 _players,
+                        deck = _deck} = return state { players = setHnds shufdeck 0 7 _players,
                                                         deck = drop 28 shufdeck}
                                         where shufdeck = shuffler seed                                
 
@@ -17,12 +17,12 @@ shuffler = shuffle' fullDeck 108
 seed = mkStdGen 1234
 
 
-setHnds :: Deck -> Int -> [Player] -> [Player]
-setHnds deck n [] = []
-setHnds deck n (p:ps) = p {hand = setCards deck n} : setHnds deck (n-1) ps
+setHnds :: Deck -> Int -> Int -> [Player] -> [Player]
+setHnds deck m n [] = []
+setHnds deck m n (p:ps) = p {hand = setCards deck m n} : setHnds deck (m+1) (n+1) ps
 
-setCards :: Deck -> Int -> Hand
-setCards deck n = map (deck!!) ids where ids = takeWhile (<28) [0,n..]
+setCards :: Deck -> Int -> Int -> Hand
+setCards deck m n = map (deck!!) ids where ids = takeWhile (<28) [m,n..]
 
 -- 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27
 -- x 0 1 2 3 4 5 x 6 7  8  9 10 11  x 12 13 14 15 16 17  x 18 19 20 21 22 23
