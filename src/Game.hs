@@ -3,6 +3,9 @@ module Game where
 import Common
 import Shuffler
 
+initialCardCount :: Int
+initialCardCount = 7
+
 -- TODO: Implement a method to initialize a new game given n players
 
 --dynamic

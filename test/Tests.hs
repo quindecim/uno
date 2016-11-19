@@ -43,7 +43,7 @@ commonSpecs = describe "Common" $ do
 shufflerSpecs :: Spec
 shufflerSpecs = describe "Shuffler" $ do
   it "Perform shuffling of cards" $ do
-    -- pendingWith "Implement shuffleDeck function"
+    --pendingWith "Implement shuffleDeck function"
     let gs = State { players = [ ], deck = fullDeck, d_stack = [ ] }
     gs' <- shuffleDeck gs
     (deck gs') `shouldNotBe` (deck gs)
@@ -66,17 +66,19 @@ gameSpecs = describe "Game" $ do
   describe "setupGame" $ do
     it "should shuffle the deck" $ do
       --pendingWith "Implement the setupGame function"
-       let gs = initGame 4
-       gs' <- setupGame gs
-       (deck gs') `shouldNotBe` (deck gs)
+      let gs = initGame 4
+      gs' <- shuffleDeck gs
+      (deck gs') `shouldNotBe` (deck gs)
     it "should distribute cards to players" $ do
       --pendingWith "Implement the setupGame function"
-       let gs = initGame 4
-       gs' <- setupGame gs
-       -- length (deck gs') `shouldBe` 80
-       hand ((players gs') !! 0) `shouldNotBe` hand ((players gs') !! 1)
-       hand ((players gs') !! 0) !! 0 `shouldNotBe` hand ((players gs') !! 1) !! 0
-       
+      let gs = initGame 4
+      gs' <- setupGame gs
+      and (map (\p -> (length $ hand p) == initialCardCount) $ players gs') `shouldBe` True
+    it "should remove cards from deck" $ do
+      --pendingWith "Implement the setupGame function"
+      let gs = initGame 4
+      gs' <- setupGame gs
+      length (deck gs') `shouldBe` 80
 
 -- Test data fixtures
 --
