@@ -6,10 +6,12 @@ import System.Random.Shuffle
 
 -- TODO: Implement a random shuffling algorithm
 shuffleDeck :: State -> IO State
-shuffleDeck state@State{players = _players, 
-                        deck = _deck} = return state { players = setHnds shufdeck 0 4 _players,
-                                                        deck = drop 28 shufdeck}
-                                        where shufdeck = shuffler seed                                
+shuffleDeck st = return State { players = setHnds shufdeck 0 4 (players st),
+                                e_players = [],
+                            	deck = drop 29 shufdeck,
+                            	d_stack = shufdeck !! 28 : [],
+                            	cur_player = noPlayer }
+                        where shufdeck = shuffler seed                                
 
 shuffler :: (RandomGen gen) => gen -> [Card]
 shuffler = shuffle' fullDeck 108
