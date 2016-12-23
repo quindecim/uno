@@ -1,5 +1,6 @@
 module Game where
 
+import Data.Maybe (fromJust, fromMaybe)
 import Common
 import Shuffler
 import System.Console.ANSI (Color(Black, Red, Green, Yellow, Blue, Magenta, Cyan, White))
@@ -35,7 +36,17 @@ initGameWithPlayers pa = gs' { players = clearHands pa } where
 
 -- TODO: Implement a method to setup the game
 setupGame :: State -> IO State
-setupGame gs = shuffleDeck gs
+setupGame gs = do
+  gs' <- shuffleDeck gs
+  return gs' {  players = setHnds (deck gs') 0 4 (players gs'),
+                d_stack = (deck gs') !! 28 : [] }
+
+setHnds :: Deck -> Int -> Int -> [Player] -> [Player]
+setHnds deck m n [] = []
+setHnds deck m n (p:ps) = p {hand = setCards deck m n} : setHnds deck (m+1) (n+1) ps
+
+setCards :: Deck -> Int -> Int -> Hand
+setCards deck m n = map (deck!!) ids where ids = takeWhile (<28) [m,n..]
 
 startGame :: State -> IO State
 startGame gs = pickNextAndPlay gs
@@ -75,17 +86,15 @@ deckIsEmpty gs = null (deck gs)
 
 -- TODO: Implement this function
 playerHasWon :: State -> Bool
-playerHasWon gs = chkOut $ players gs
+playerHasWon gs
+          | curHand gs == [] = True
+          | otherwise        = False
 
 -- TODO: Implement this function
 playerIsOut :: State -> Bool
-playerIsOut gs = chkOut $ players gs
-
-chkOut :: [Player] -> Bool
-chkOut [] = False
-chkOut (p:ps)
-        | hand p == [] = True
-        | otherwise    = chkOut ps
+playerIsOut gs
+          | curHand gs == [] = True
+          | otherwise        = False
 
 reverseAndPlay :: State -> IO State
 reverseAndPlay gs = do
@@ -134,7 +143,7 @@ takeAction action card gs
 
 cardCanPlay :: Card -> State -> Bool
 cardCanPlay card gs
-  | isWildcard card = error "Wildcard not allowed, use specific color change card"
+  | isWildcard card = error ("Wildcard not allowed, use specific color change card" ++ "Card: " ++ show (card))
   | isChangeColCards card = True
   | (color card) == (color $ topDCard gs) = True
   | (value card) == (value $ topDCard gs) = True
@@ -158,7 +167,10 @@ takeFromHandWithAction card next_action gs = do
 
 -- TODO: Implement this function
 takeFromHand :: Card -> State -> IO State
-takeFromHand card gs = return gs
+takeFromHand card gs = do
+  gs' <- updateCurHand gs s
+  return (gs'{d_stack = (d_stack gs') ++ f })
+  where (f, s) = takeCards [card] (curHand gs)
 
 takeFromDeck :: State -> IO (Action, State)
 takeFromDeck gs = do
@@ -167,11 +179,13 @@ takeFromDeck gs = do
 
 -- TODO: Implement this function
 reversePlayers :: State -> IO State
-reversePlayers gs = return gs
+reversePlayers gs = return (gs { players = reverse (players gs) })
 
 -- TODO: Implement this function
 drawNCards :: Int -> State -> Player -> IO State
-drawNCards n gs player = return gs
+drawNCards n gs player =  do
+  gs' <- updateCurHand gs $ hand player ++ (take n (deck gs))
+  updateDeck gs' $ drop n (deck gs')
 
 updatePlayer :: State -> Player -> Player -> IO State
 updatePlayer gs p new_p = do
@@ -208,7 +222,7 @@ updateDeck gs deck' = return (gs { deck = deck' })
 
 -- TODO: Implement this function
 reloadDeck :: State -> IO State
-reloadDeck gs = return gs
+reloadDeck gs = return (gs { d_stack = topDCard gs : [] , deck = init (d_stack gs) } )
 
 topDCard :: State -> Card
 topDCard gs = last (d_stack gs)
@@ -223,13 +237,6 @@ updateCurPlayer gs player = return (gs { cur_player = player })
 getNextPlayer :: State -> Player
 getNextPlayer gs = chkCur (players gs) (cur_player gs)
 
-chkCur :: [Player] -> Player -> Player
-chkCur ps (NoPlayer _) = head $ ps
-chkCur (p:ps) cur
-        | cur == ps !! (length ps - 1) = p
-        | p == cur = head ps
-        | otherwise = chkCur ps cur
-
 pickNextPlayer :: State -> IO State
 pickNextPlayer gs = updateCurPlayer gs $ getNextPlayer gs
 
@@ -238,7 +245,20 @@ playCurrentPlayer gs = useSimpleStrategy gs (topDCard gs) (curHand gs)
 
 -- TODO: Implement this function
 useSimpleStrategy :: State -> Card -> Hand -> (Action, Card)
-useSimpleStrategy gs dcard hand = (TakeFromDeck, noCard)
-
+useSimpleStrategy gs card hand
+  | countCardsByColor (color card) hand > 0            = (UseCard, fromJust $ getCardWithColor (color card) hand)
+  | valueInHand (value card) hand                      = (UseCard, fromJust $ getCardWithValue (value card) hand)
+  | wildcardInHand hand && color card == Red           = (UseCard, colorizeWildcard Black $ fromJust $ getWildcard hand)
+  | wildcardInHand hand && color card == Green         = (UseCard, colorizeWildcard Red $ fromJust $ getWildcard hand)
+  | wildcardInHand hand && color card == Yellow        = (UseCard, colorizeWildcard Green $ fromJust $ getWildcard hand)
+  | wildcardInHand hand && color card == Blue          = (UseCard, colorizeWildcard Yellow $ fromJust $ getWildcard hand)
+  | otherwise                                          = (TakeFromDeck, noCard)
 
 -- ADD extra codes after this line, so it's easy to rebase or merge code changes in Git --
+
+chkCur :: [Player] -> Player -> Player
+chkCur ps (NoPlayer _) = head $ ps
+chkCur (p:ps) cur
+        | cur == ps !! (length ps - 1) = p
+        | p == cur = head ps
+        | otherwise = chkCur ps cur

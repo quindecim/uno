@@ -82,7 +82,7 @@ fullDeck :: Deck
 fullDeck = numberCards ++ attackCards ++ wildCards
 
 -- Not regular cards, but used in the game loop, to represent change of color.
-changeColCards = [ Card c v | c <- [Red .. Blue], v <- [Plus4, ChCol] ]
+changeColCards = [ Card c v | c <- [Red .. Blue], v <- [Plus4, ChCol] ] 
 
 colorBlack c = Card { color = Black, value = value c }
 colorizeWildcard col c = Card { color = col, value = (value c) }
